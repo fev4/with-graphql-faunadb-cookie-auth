@@ -22,13 +22,13 @@ const IndexPage = () => {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [logoutUser, { loading: logoutLoading }] = useMutation(LOGOUT_USER, {
     onCompleted: (data) => {
-      console.log('logout completed');
+      console.log('Logout complete');
       setIsUserLoggedIn(false);
     },
   });
   const { loading: validateLoading, error, data } = useQuery(VALIDATE_COOKIE, {
     onCompleted: (data) => {
-      console.log('validation completed');
+      console.log('Validation complete');
       if (!data.validateCookie) {
         setIsUserLoggedIn(false);
       } else {
@@ -43,16 +43,23 @@ const IndexPage = () => {
     <App>
       <InfoBox>
         ⛔️
-        <strong>
-          Please don't use a real email address, this is publicly available.
-        </strong>
+        <strong>Please don't use a real email address</strong>
       </InfoBox>
       <InfoBox>
         This example shows how to signup/login and setup an httpOnly cookie
         while also validating said cookie on focus and on every initial render.
         Check out /api/graphql for the graphql playground
       </InfoBox>
-      <InfoBox>Checkout Application -> Cookies in the devtools</InfoBox>
+      <InfoBox>
+        Checkout Application -> Cookies in the devtools.
+        <br />
+        <br />
+        <strong>Try</strong>
+        <br />
+        email: 123@gmail.com or 321@gmail.com or use a test one
+        <br />
+        pass: 123
+      </InfoBox>
       <InfoBox>
         Is user logged in? <strong>{isUserLoggedIn ? 'TRUE' : 'FALSE'}</strong>
       </InfoBox>
