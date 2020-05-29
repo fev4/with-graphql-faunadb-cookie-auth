@@ -16,14 +16,27 @@ const IndexPage = () => {
 
   const VALIDATE_COOKIE = gql`
     query validateCookie {
-      validateToken
+      validateCookie
     }
   `;
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
-  const [logoutUser, { loading }] = useMutation(LOGOUT_USER, {
+  const [logoutUser, { loading: logoutLoading }] = useMutation(LOGOUT_USER, {
     onCompleted: (data) => {
       console.log('logout completed');
       setIsUserLoggedIn(false);
+    },
+  });
+  const { loading: validateLoading, error, data } = useQuery(VALIDATE_COOKIE, {
+    onCompleted: (data) => {
+      console.log('validation completed');
+      if (!data.validateCookie) {
+        setIsUserLoggedIn(false);
+      } else {
+        setIsUserLoggedIn(true);
+      }
+    },
+    onError: (error) => {
+      console.log(error);
     },
   });
   return (
@@ -46,7 +59,7 @@ const IndexPage = () => {
       {!isUserLoggedIn ? null : (
         <div>
           <h2>LogOut</h2>
-          <button type="button" disabled={loading} onClick={logoutUser}>
+          <button type="button" disabled={logoutLoading} onClick={logoutUser}>
             Submit
           </button>
         </div>
