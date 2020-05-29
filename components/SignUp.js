@@ -13,6 +13,9 @@ export default function SignUp({ setIsUserLoggedIn }) {
       console.log('completed', data.signupUser);
       setIsUserLoggedIn(true);
     },
+    onError: (error) => {
+      console.log(error);
+    },
   });
 
   const handleSubmit = (event) => {
