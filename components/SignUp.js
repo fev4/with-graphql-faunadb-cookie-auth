@@ -1,24 +1,29 @@
-import { useMutation } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import { useMutation } from 'react-query';
+import { request } from 'graphql-request';
 
-const SIGNUP_USER = gql`
+const SIGNUP_USER = `
   mutation signupUser($data: CreateUserInput!) {
     signupUser(data: $data)
   }
 `;
 
 export default function SignUp({ setIsUserLoggedIn }) {
-  const [signupUser, { loading }] = useMutation(SIGNUP_USER, {
-    onCompleted: (data) => {
-      console.log('completed', data.signupUser);
-      setIsUserLoggedIn(true);
+  const [signupUser, { status: signupStatus }] = useMutation(
+    (variables) => {
+      return request('/api/graphql', SIGNUP_USER, variables);
     },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
+    {
+      onSuccess: (data) => {
+        console.log('Signup success');
+        setIsUserLoggedIn(true);
+      },
+      onError: (err) => {
+        console.log(err.message);
+      },
+    }
+  );
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const form = event.target;
     const formData = new window.FormData(form);
@@ -26,13 +31,11 @@ export default function SignUp({ setIsUserLoggedIn }) {
     const password = formData.get('password');
     form.reset();
 
-    signupUser({
-      variables: {
-        data: {
-          email,
-          password,
-          role: 'FREE_USER',
-        },
+    await signupUser({
+      data: {
+        email,
+        password,
+        role: 'FREE_USER',
       },
     });
   };
@@ -40,9 +43,9 @@ export default function SignUp({ setIsUserLoggedIn }) {
   return (
     <form onSubmit={handleSubmit}>
       <h2>SignUp</h2>
-      <input placeholder="email" name="email" type="email" required />
+      <input placeholder="username" name="email" type="email" required />
       <input placeholder="password" name="password" type="password" required />
-      <button type="submit" disabled={loading}>
+      <button type="submit" disabled={signupStatus === 'loading'}>
         Submit
       </button>
       <style jsx>{`

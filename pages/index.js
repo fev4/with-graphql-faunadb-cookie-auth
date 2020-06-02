@@ -1,49 +1,68 @@
+import { useState } from 'react';
+import { useMutation, useQuery } from 'react-query';
+import { request } from 'graphql-request';
+
 import App from '../components/App';
 import InfoBox from '../components/InfoBox';
 import SignUp from '../components/SignUp';
 import LogIn from '../components/LogIn';
-import { useQuery, useMutation } from '@apollo/react-hooks';
-import { withApollo } from '../lib/graphql/apollo';
-import { useState, useEffect } from 'react';
-import gql from 'graphql-tag';
 
-const IndexPage = () => {
-  const LOGOUT_USER = gql`
+const LOGOUT_USER = `
     mutation logoutUser {
       logoutUser
     }
   `;
 
-  const VALIDATE_COOKIE = gql`
+const VALIDATE_COOKIE = `
     query validateCookie {
-      validateCookie
+      validCookie
     }
   `;
+
+const IndexPage = () => {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
-  const [logoutUser, { loading: logoutLoading }] = useMutation(LOGOUT_USER, {
-    onCompleted: (data) => {
-      console.log('Logout complete');
-      setIsUserLoggedIn(false);
+  const [initialValidation, setInitialValidation] = useState();
+
+  const [logoutUser, { status: logoutStatus }] = useMutation(
+    () => {
+      return request('/api/graphql', LOGOUT_USER);
     },
-  });
-  const { loading: validateLoading, error, data } = useQuery(VALIDATE_COOKIE, {
-    onCompleted: (data) => {
-      console.log('Validation complete');
-      if (!data.validateCookie) {
+    {
+      onSuccess: (data) => {
+        console.log('Logout success');
         setIsUserLoggedIn(false);
-      } else {
-        setIsUserLoggedIn(true);
-      }
+      },
+    }
+  );
+
+  // Should only validate when user is logged in and every 5 minutes
+  const { status: validateStatus, isFetching: isValidateFetching } = useQuery(
+    ['validCookie'],
+    async (key, name) => {
+      const res = await request('/api/graphql', VALIDATE_COOKIE);
+      return res;
     },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
+    {
+      onSuccess: (data) => {
+        if (data.validCookie) {
+          console.log('Validation success');
+          setIsUserLoggedIn(true);
+        } else {
+          console.log('Custom cookie not valid');
+          setIsUserLoggedIn(false);
+        }
+      },
+      onError: (err) => {
+        console.log(err);
+      },
+    }
+  );
+
   return (
     <App>
       <InfoBox>
         ⛔️
-        <strong>Please don't use a real email address</strong>
+        <strong>Don't use any real info</strong>
       </InfoBox>
       <InfoBox>
         This example shows how to signup/login and setup an httpOnly cookie
@@ -51,14 +70,23 @@ const IndexPage = () => {
         Check out /api/graphql for the graphql playground
       </InfoBox>
       <InfoBox>
-        Checkout Application -> Cookies in the devtools.
+        Checkout Application -> Cookies in the devtools and react-query devtools
+        at the bottom
         <br />
         <br />
-        <strong>Try</strong>
+        <strong>Try to log in with:</strong>
         <br />
-        email: 123@gmail.com or 321@gmail.com or use a test one
+        username:: 123@example.com
         <br />
-        pass: 123
+        password:: 123
+      </InfoBox>
+      <InfoBox>
+        Is cookie being validated?{' '}
+        <strong>
+          {validateStatus === 'loading' || isValidateFetching
+            ? 'TRUE'
+            : 'FALSE'}
+        </strong>
       </InfoBox>
       <InfoBox>
         Is user logged in? <strong>{isUserLoggedIn ? 'TRUE' : 'FALSE'}</strong>
@@ -66,19 +94,23 @@ const IndexPage = () => {
       {!isUserLoggedIn ? null : (
         <div>
           <h2>LogOut</h2>
-          <button type="button" disabled={logoutLoading} onClick={logoutUser}>
+          <button
+            type="button"
+            disabled={logoutStatus === 'loading'}
+            onClick={logoutUser}
+          >
             Submit
           </button>
         </div>
       )}
       {isUserLoggedIn ? null : (
         <>
-          <SignUp setIsUserLoggedIn={setIsUserLoggedIn} />
           <LogIn setIsUserLoggedIn={setIsUserLoggedIn} />
+          <SignUp setIsUserLoggedIn={setIsUserLoggedIn} />
         </>
       )}
     </App>
   );
 };
 
-export default withApollo({ ssr: false })(IndexPage);
+export default IndexPage;

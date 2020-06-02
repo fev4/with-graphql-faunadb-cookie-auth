@@ -1,20 +1,29 @@
-import { useMutation } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import { useMutation } from 'react-query';
+import { request } from 'graphql-request';
 
-export default function LogIn({ setIsUserLoggedIn }) {
-  const LOGIN_USER = gql`
+const LOGIN_USER = `
     mutation loginUser($data: LoginUserInput!) {
       loginUser(data: $data)
     }
   `;
-  const [loginUser, { loading }] = useMutation(LOGIN_USER, {
-    onCompleted: (data) => {
-      console.log('completed', data.loginUser);
-      setIsUserLoggedIn(true);
-    },
-  });
 
-  const handleSubmit = (event) => {
+export default function LogIn({ setIsUserLoggedIn }) {
+  const [loginUser, { status: loginStatus }] = useMutation(
+    (variables) => {
+      return request('/api/graphql', LOGIN_USER, variables);
+    },
+    {
+      onSuccess: (data) => {
+        console.log('Login success');
+        setIsUserLoggedIn(true);
+      },
+      onError: (err) => {
+        console.log(err.message);
+      },
+    }
+  );
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const form = event.target;
     const formData = new window.FormData(form);
@@ -22,12 +31,10 @@ export default function LogIn({ setIsUserLoggedIn }) {
     const password = formData.get('password');
     form.reset();
 
-    loginUser({
-      variables: {
-        data: {
-          email,
-          password,
-        },
+    await loginUser({
+      data: {
+        email,
+        password,
       },
     });
   };
@@ -35,9 +42,9 @@ export default function LogIn({ setIsUserLoggedIn }) {
   return (
     <form onSubmit={handleSubmit}>
       <h2>LogIn</h2>
-      <input placeholder="email" name="email" type="email" required />
+      <input placeholder="username" name="email" type="email" required />
       <input placeholder="password" name="password" type="password" required />
-      <button type="submit" disabled={loading}>
+      <button type="submit" disabled={loginStatus === 'loading'}>
         Submit
       </button>
       <style jsx>{`

@@ -7,21 +7,19 @@
     "start": "next start"
   },
   "dependencies": {
-    "@apollo/react-hooks": "3.1.5",
-    "@apollo/react-ssr": "3.1.5",
-    "apollo-cache-inmemory": "1.6.6",
-    "apollo-client": "2.6.10",
     "apollo-link-context": "^1.0.20",
     "apollo-link-http": "^1.5.17",
     "apollo-server-micro": "^2.13.1",
     "cookie": "^0.4.1",
     "faunadb": "^2.14.1",
     "graphql": "^15.0.0",
-    "graphql-tag": "2.10.3",
+    "graphql-request": "^2.0.0",
     "next": "latest",
     "prop-types": "^15.6.2",
     "react": "^16.7.0",
-    "react-dom": "^16.7.0"
+    "react-dom": "^16.7.0",
+    "react-query": "^1.5.3",
+    "react-query-devtools": "^1.1.16"
   },
   "license": "ISC",
   "devDependencies": {
