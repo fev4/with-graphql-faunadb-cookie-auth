@@ -10,13 +10,13 @@ These are some of the features that this setup provides:
 
 ## Prerequisites
 
-- Basic understanding of [how to import and work with GraphQL schemas inside FaunaDB](https://docs.fauna.com/fauna/current/start/graphql).
 - Basic understanding of [GraphQL](https://www.apollographql.com/docs/apollo-server/schema/schema/).
+- Basic understanding of [how to import and work with GraphQL schemas inside FaunaDB](https://docs.fauna.com/fauna/current/start/graphql).
 - Basic understanding of [Vercel deployments](https://vercel.com/docs/v2/serverless-functions/introduction) and [limitations](https://vercel.com/docs/v2/platform/limits).
 - Basic understanding of [Next.js API endpoints](https://nextjs.org/docs/api-routes/introduction).
 - Basic understanding of [httpOnly cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies).
 - Medium to advanced understanding of Apollo Server (at least [how to stitch schemas and delegate them](https://www.apollographql.com/docs/apollo-server/features/schema-stitching/)).
-- Medium to advanced understanding of Fauna Query Language ([FQL](https://docs.fauna.com/fauna/current/api/fql/)) and [user-defined ABAC roles](https://docs.fauna.com/fauna/current/security/roles) for both Collections and Functions.
+- Medium to advanced understanding of [Fauna Query Language (FQL)](https://docs.fauna.com/fauna/current/api/fql/) and [user-defined ABAC roles](https://docs.fauna.com/fauna/current/security/roles) for both Collections and Functions.
 
 ## Setting up FaunaDB
 
@@ -24,4 +24,4 @@ Let's start by defining what we need from FaunaDB. In this case we need three th
 
 ### The GraphQL schema
 
-We'll be using a simple schema, take a look at it [here](/lib/graphql/faunadbSchema.fql).
+We'll be using a simple schema, take a look at it [here](/lib/graphql/faunadbSchema.gql).
