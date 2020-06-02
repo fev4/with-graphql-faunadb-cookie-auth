@@ -16,12 +16,19 @@ These are some of the features that this setup provides:
 - Basic understanding of [Next.js API endpoints](https://nextjs.org/docs/api-routes/introduction).
 - Basic understanding of [httpOnly cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies).
 - Medium to advanced understanding of Apollo Server (at least [how to stitch schemas and delegate them](https://www.apollographql.com/docs/apollo-server/features/schema-stitching/)).
-- Medium to advanced understanding of [Fauna Query Language (FQL)](https://docs.fauna.com/fauna/current/api/fql/) and [user-defined ABAC roles](https://docs.fauna.com/fauna/current/security/roles) for both Collections and Functions.
+- Medium to advanced understanding of [Fauna Query Language (FQL)](https://docs.fauna.com/fauna/current/api/fql/), [User-Defined Functions (UDFs)](https://docs.fauna.com/fauna/current/api/graphql/functions), [User-Defined Roles](https://docs.fauna.com/fauna/current/security/roles) for both Collections and Functions and lastly [Attribute-Based Access Control (ABAC)](https://docs.fauna.com/fauna/current/security/abac)
 
 ## Setting up FaunaDB
 
-Let's start by defining what we need from FaunaDB. In this case we need three things: A GraphQL schema, FQL function definitions and role definitions. So the very first step is to have a clean db in FaunaDB to work with, go ahead and create that first.
+Let's start by defining what we need from FaunaDB. In this case we need three things: A GraphQL schema, User Defined Functions (UDFs) with FQL, and User-Defined roles. So the very first step is to have a clean db in FaunaDB to work with. Go ahead and create that first.
 
 ### The GraphQL schema
 
-We'll be using a simple schema, take a look at it [here](/lib/graphql/faunadbSchema.gql).
+We'll be using a simple schema, take a look at it [here](/lib/graphql/faunadbSchema.gql). It defines a couple of things:
+
+- `UserRole`: which we will use for ABAC role definitions. A basic example of how to use them at least, so you can get a sense of what these do and are capable of.
+- `User`: a user type, the only custom `type` in this schema, because I want to keep things as simple as possible.
+- `input`s: `CreateUserInput` & `LoginUserInput`, which will define the data needed for our mutations.
+- `Mutation`s: here we define the secret sauce of this whole thing through [`@resolver` directives](https://docs.fauna.com/fauna/current/api/graphql/directives/d_resolver). In short, a `@resolver` let's us define the name of an User Defined Function (UDF) used to resolve a mutation. This is the very next step we'll do in the following section.
+
+### FQL Function Definition
