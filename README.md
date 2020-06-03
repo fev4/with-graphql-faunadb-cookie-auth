@@ -39,6 +39,34 @@ This is important because we want to avoid using [`introspectSchema` from Apollo
 
 So, since we want to avoid that, having a local copy in SDL format will help avoid that roundtrip request.
 
-Copy all the contents inside [`remoteSchema.js`](/lib/graphql/remoteSchema.js) and be careful with the parsing, since we are saving all this as a string, you might need to replace a few `` ` ``s for `"`s, and unify some comments with `#` in order to have a correct parsed string.
+Copy all the contents from the recently downloaded SDL file inside [`remoteSchema.js`](/lib/graphql/remoteSchema.js) and be careful with the parsing, since we are saving all this as a string, you might need to replace a few `` ` ``s for `"`s, and unify some comments with `#` in order to have a correct parsed string.
 
-### FQL Function Definition
+### User Defined Functions (UDFs)
+
+Here's where the magic starts. As you saw earlier we used `@resolver` directives to tell Fauna that we plan to define some functions. We'll do just that and define some more, in total we'll create 5 UDFs, 4 which will be used by the `@resolver` directives, and 1 which will be used directly by our local-defined schema (more on that later).
+
+Check out the [`exampleFunctions.js`](/lib/fauna/exampleFunctions.js) file where I've defined these 5 functions. Let's explain what each one does.
+
+- `create_user`: Uses the [`Create` function](https://docs.fauna.com/fauna/current/api/fql/functions/create) along with the `credentials` field name to set permissions for the `User` document.
+- `login_user`: Uses the [`Login` function](https://docs.fauna.com/fauna/current/api/fql/functions/login) to match the input data against the previously mentioned `credentials` and from the returned object we [`Select`](https://docs.fauna.com/fauna/current/api/fql/functions/select) the `secret`. Notice that we also use the field name `ttl` to set a time to live of 14 days from the login moment, but [as the docs specify](https://docs.fauna.com/fauna/current/api/fql/functions/login) this is not a guarantee for the token to expire at that precise point in time.
+- `logout_user`: This one is easy. It simply uses the [`Logout` function](https://docs.fauna.com/fauna/current/api/fql/functions/logout) and passes the `true` parameter to tell Fauna to delete all tokens related to the current [`Identity`](https://docs.fauna.com/fauna/current/api/fql/functions/identity).
+- `signup_user`: Here we use the [`Do` function](https://docs.fauna.com/fauna/current/api/fql/functions/do) to [`Call`](https://docs.fauna.com/fauna/current/api/fql/functions/call) the `create_user` and `login_user` functions in sequence. Bare in mind that `Do` returns the result of the latest `Call`ed function, which is precisely what we want.
+- `validate_token`: Lastly the most important function in my opinion which unifies the whole concept of httpOnly cookies and takes care of syncing the user with the state of the [`Tokens`](https://docs.fauna.com/fauna/current/api/fql/functions/tokens) in the DB. It simply tells us if the passed token is valid or not, by passing it to [`KeyFromSecret`](https://docs.fauna.com/fauna/current/api/fql/functions/keyfromsecret) and evaluating if it is not null.
+
+In order to create these functions, be sure to go to the "FUNCTIONS" menu in Fauna's dashboard, there you should already see at least the first 4 functions defined through the schema with an empty `Lambda`. These were automatically created during the import process in the previous step.
+
+What you need to do is then copy-paste each function inside Fauna's dashboard. One important thing here is the "Role" dropdown selector (which is marked as optional). We will use these drop-downs to select the roles (which we'll create in the next step) that each function has. Ultimately, these roles simply define the resources, in other words, the privileges each function has access to.
+
+### User Defined Roles
+
+Here's a very important part to the whole ABAC implementation. It's a very flexible part of Fauna, which makes it really powerful, and so it can be tricky to configure if not done right from the beginning, or at least if not done with a plan in mind.
+
+Here's the plan. We want to define roles for each function that we previously created, and then we want to define two more roles, one for the `User` document and lastly one role for public use, simply called `public`, where we will give access to a couple of functions that should be available to anyone _not logged in_.
+
+In order to keep this short, because the roles can get quite large, I've created a file called [exampleRoles.js](/lib/fauna/exampleRoles.js) where you can take a look at all of them. In the following points, I'll highlight anything important from each of those.
+
+But before that, I want to focus your attention on the functions [`CreateRole`](https://docs.fauna.com/fauna/current/api/fql/functions/createrole) and [Update](https://docs.fauna.com/fauna/current/api/fql/functions/update). These will be quite used for you in order to create and update roles respectively, so here's how using these would look like:
+
+```
+CreateRole()
+```
