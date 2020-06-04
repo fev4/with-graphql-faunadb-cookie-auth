@@ -67,7 +67,11 @@ const IndexPage = () => {
       <InfoBox>
         This example shows how to signup/login and setup an httpOnly cookie
         while also validating said cookie on focus and on every initial render.
-        Check out /api/graphql for the graphql playground
+        Check out{' '}
+        <a
+          href="https://github.com/fillipvt/with-graphql-faunadb-cookie-auth"
+          target="_blank"
+        />
       </InfoBox>
       <InfoBox>
         Checkout Application -> Cookies in the devtools and react-query devtools
