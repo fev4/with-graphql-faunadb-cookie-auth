@@ -21,7 +21,6 @@ const VALIDATE_COOKIE = `
 
 const IndexPage = () => {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
-  const [initialValidation, setInitialValidation] = useState();
 
   const [logoutUser, { status: logoutStatus }] = useMutation(
     () => {
@@ -71,7 +70,9 @@ const IndexPage = () => {
         <a
           href="https://github.com/fillipvt/with-graphql-faunadb-cookie-auth"
           target="_blank"
-        />
+        >
+          the GitHub repo for a full explanation
+        </a>
       </InfoBox>
       <InfoBox>
         Checkout Application -> Cookies in the devtools and react-query devtools
