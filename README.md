@@ -167,7 +167,7 @@ I know I'm not explaining a ton of stuff in this `README` but take this as a sta
 
 This example is possible because a ton of work has been done previously by incredible talented people:
 
-- Paul Patterson with his [great repo](https://github.com/ptpaterson/netlify-faunadb-graphql-auth) implementing the same cookie auth flow in Netlify. Thank you for you great feedback and help in Fauna's community Slack. Check out his [overrideSchema.js](https://github.com/ptpaterson/netlify-faunadb-graphql-auth/blob/master/functions/graphql/overrideSchema.js) file for an added step in schema transformation (`transformedRemoteSchema`), which filters out unneeded root fields for the client.
+- Paul Patterson with his [great repo](https://github.com/ptpaterson/netlify-faunadb-graphql-auth) implementing the same cookie auth flow in Netlify. Thank you for the great feedback and help in Fauna's community Slack. Check out his [overrideSchema.js](https://github.com/ptpaterson/netlify-faunadb-graphql-auth/blob/master/functions/graphql/overrideSchema.js) file for an added step in schema transformation (`transformedRemoteSchema`), which filters out unneeded root fields for the client.
 - Next.js team and their incredible examples: Apollo Server ([1](https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server-and-client-auth), [2](https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server-and-client), [3](https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server)).
 - FaunaDB team for their superb support even so I ask the silliest questions possible. Also your docs have improved tremendously, and I love them! They are incredibly helpful.
 
