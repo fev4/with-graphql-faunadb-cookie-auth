@@ -1,12 +1,12 @@
-# Next.js with GraphQL, FaunaDB and Cookie Auth
+# Next.js with FaunaDB and `httpOnly` Cookie Auth Flow with GraphQL
 
-The following guide explains how to setup FaunaDB & Next.js in order to have a simple `httpOnly` auth flow, using Apollo Server and react-query/graphql-request on the client, while being deployed in Vercel (a serverless environment).
+The following guide explains how to setup FaunaDB & Next.js in order to have a simple `httpOnly` cookie auth flow, using Apollo Server and react-query/graphql-request on the client, while being deployed in Vercel (a serverless environment).
 
 These are some of the features that this setup provides:
 
 - A somewhat secure auth flow with httpOnly cookies [[1]](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Security)
 - Token validation on refresh and window focus thanks to `react-query`'s [`useQuery` API](https://github.com/tannerlinsley/react-query#useQuery). In other words, if the token associated with a user identity is invalidated with [`Logout`](https://docs.fauna.com/fauna/current/api/fql/functions/logout) or in any other way, the user is also logged out in the front-end (as soon as the window is focused or refreshed).
-- The local GraphQL server functions as a proxy that allows us to extend Fauna's GraphQL endpoint, and basically, let's us add local-only queries or mutations in order to extend the flexibility of remote queries or mutations, bringing great flexibility to the app. In this case, the proxy is used to create a `validCookie` query which runs before every login, signup or logout mutation to verify if the httpCookie token is valid or not, before delegating to the remote schema (the one located in Fauna's endpoint).
+- A local GraphQL server which functions as a proxy that allows us to extend Fauna's GraphQL endpoint, and basically, let's us add local-only queries or mutations in order to extend the flexibility of remote queries or mutations, bringing great flexibility to the web-app. In this case, the proxy is used to create a `validCookie` query which runs before every login, signup or logout mutation to verify if the httpCookie token is valid or not, before delegating to the remote schema (the one located in Fauna's endpoint).
 
 ## Prerequisites
 
@@ -27,7 +27,7 @@ Let's start by defining what we need from FaunaDB. In this case we need three th
 We'll be using a simple schema, take a look at it [here](/lib/graphql/faunadbSchema.gql). It defines a couple of things:
 
 - `UserRole`: which we will use for ABAC role definitions. A basic example of how to use them at least, so you can get a sense of what these do and are capable of.
-- `User`: a user type, the only custom `type` in this schema, because I want to keep things as simple as possible.
+- `User`: a user type, the only custom `type` in this schema, because I want to keep things as simple as possible. But notice here the usage of [`@unique`](https://docs.fauna.com/fauna/current/api/graphql/directives/d_unique), this tells Fauna to create an Index based on this field which we'll later use to login users. [Indexes](https://docs.fauna.com/fauna/current/api/fql/indexes) are a very important part of Fauna, because they allow the organization and retrieval of [Documents](https://docs.fauna.com/fauna/current/api/fql/documents) by their attributes, in this case Fauna will create an index which we can use to access the `User`s documents by their `email`.
 - `input`s: `CreateUserInput` & `LoginUserInput`, which will define the data needed for our mutations.
 - `Mutation`s: here we define the secret sauce of this whole thing through [`@resolver` directives](https://docs.fauna.com/fauna/current/api/graphql/directives/d_resolver). In short, a `@resolver` let's us define the name of an User Defined Function (UDF) used to resolve a mutation. This is the very next step we'll do in the following section.
 
@@ -68,5 +68,52 @@ In order to keep this short, because the roles can get quite large, I've created
 But before that, I want to focus your attention on the functions [`CreateRole`](https://docs.fauna.com/fauna/current/api/fql/functions/createrole) and [Update](https://docs.fauna.com/fauna/current/api/fql/functions/update). These will be quite used for you in order to create and update roles respectively, so here's how using these would look like:
 
 ```
-CreateRole()
+// The logoutUser function role would look like:
+CreateRole(
+  {
+    name: "fnc_role_logout_user",
+    privileges: [
+      {
+        resource: Ref("tokens"),
+        actions: {
+          create: true,
+          read: true
+        }
+      }
+    ]
+  }
+)
 ```
+
+You'll probably won't need to [`Update`](https://docs.fauna.com/fauna/current/api/fql/functions/update) the functions in this example, but just in case you need it. Please be careful with this function, specially when using it to update arrays (i.e: `privileges`). Arrays are not merged but totally replaced. You can check this with the following example where if you only pass `read: true`, `create` becomes `false` (as originally created with).
+
+```
+// This is a contrived example
+Update(
+  Role("fnc_role_logout_user"),
+  {
+    privileges: [
+      {
+        resource: Ref("tokens"),
+        actions: {
+          read: true
+        }
+      }
+    ]
+  }
+)
+```
+
+Now let's examine each role:
+
+- `fnd_role_create_user`: This creates a user under a specific condition, and that's only if the `role` the user is created with is marked as `FREE_USER`. This is just an example of how you can use any field available in input data and built-in Fauna function to create specific restrictions for your [User Defined Roles](https://docs.fauna.com/fauna/current/security/roles).
+- `fnc_role_login_user`: This is where we provide access to the index mentioned in the schema section. The index is automatically created and called `unique_User_email`.
+- `fnc_role_logout_user`: All roles are important, but logout is special because it's the first role which deals with [`Tokens`](https://docs.fauna.com/fauna/current/api/fql/functions/tokens). Tokens are [an essential part](https://docs.fauna.com/fauna/current/security/index.html#tokens) of the whole ABAC process and these are automatically created and added to an index with the same name each time you call the `Login` function.
+- `fnc_role_signup_user`: Since we've already defined `create_user` and `login_user` and signing up a user is basically the same, we can reuse their privileges by simply being able to call them.
+- `fnc_role_validate_token`: This functions requires to the index that the `Tokens` functions modifies, in this case we only need to read the items to evaluate if one specific token exists there or not.
+- `free_user`: Here we want to define all the resources a logged in user should have access to. In this case we allow a logged in user to logout, and to validate tokens. This role also restricts `read` and `write` actions on the `User` collection by basically stating that a logged in user only can update or read his/her own data, and that the user can't modify it's role. Finally we define a membership for the role which tells Fauna that this role should be automatically applied to all `User` documents which have a specific `role`.
+- `public`: lastly we define the `public` role, where we define which are the functions that every visitor (which is not logged in) should have. Notice that we don't directly provide access to the function `create_user`, this is handled under the hood by the `signup_user` function, which is allowed to be called in this instance.
+
+## Gotchas
+
+## Credits
