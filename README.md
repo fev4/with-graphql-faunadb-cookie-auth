@@ -100,9 +100,9 @@ Here's a very important part to the whole ABAC implementation. It's a very flexi
 
 Here's the plan. We want to define roles for each function that we previously created, and then we want to define two more roles, one for the `User` document and lastly one role for public use, simply called `public`, where we will give access to a couple of functions that should be available to anyone _not logged in_.
 
-In order to keep this short, because the roles can get quite large, I've created a file called [exampleRoles.js](/lib/fauna/exampleRoles.js) where you can take a look at all of them. In the following points, I'll highlight anything important from each of those.
+In order to keep this short, because the roles can get quite large, I've created a file called [`exampleRoles.js`](/lib/fauna/exampleRoles.js) where you can take a look at all of them. In the following points, I'll highlight anything important from each of those.
 
-But before that, I want to focus your attention on the functions [`CreateRole`](https://docs.fauna.com/fauna/current/api/fql/functions/createrole) and [Update](https://docs.fauna.com/fauna/current/api/fql/functions/update). These will be quite used for you in order to create and update roles respectively, so here's how using these would look like:
+But before that, I want to focus your attention on the functions [`CreateRole`](https://docs.fauna.com/fauna/current/api/fql/functions/createrole) and [`Update`](https://docs.fauna.com/fauna/current/api/fql/functions/update). These will be quite used for you in order to create and update roles respectively, so here's how using these would look like:
 
 ```
 // The logoutUser function role would look like:
@@ -158,6 +158,8 @@ You only need one env variable in your deployment, and it's for the `public` rol
 Simply go to your Fauna Dashboard and under "SECURITY" click "NEW KEY", there select role `public` and give it any name you want. The only thing left to do is to upload this key to your Production, Preview and Development environments [in Vercel](https://vercel.com/docs/v2/build-step#environment-variables) with the name `FAUNADB_PUBLIC_ACCESS_KEY`.
 
 Notice that we only use `FAUNADB_PUBLIC_ACCESS_KEY` in [schema.js](/lib/graphql/schema.js) in the `contextlink` and it will be immediately swapped after obtaining a valid token through `Login`.
+
+Finally just run `vc pull env` to create a `.env` file locally in order to run it on your machine.
 
 ## Closing thoughts
 
