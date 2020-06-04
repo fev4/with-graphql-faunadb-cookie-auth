@@ -170,3 +170,5 @@ This example is possible because a ton of work has been done previously by incre
 - Paul Patterson with his [great repo](https://github.com/ptpaterson/netlify-faunadb-graphql-auth) implementing the same cookie auth flow in Netlify. Thank you for you great feedback and help in Fauna's community Slack.
 - Next.js team and their incredible examples: Apollo Server ([1](https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server-and-client-auth), [2](https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server-and-client), [3](https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server)).
 - FaunaDB team for their superb support even so I ask the silliest questions possible. Also your docs have improved tremendously, and I love them! They are incredibly helpful.
+
+Thank you all
