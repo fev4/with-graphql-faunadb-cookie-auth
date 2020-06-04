@@ -75,8 +75,7 @@ const IndexPage = () => {
         </a>
       </InfoBox>
       <InfoBox>
-        Checkout Application -> Cookies in the devtools and react-query devtools
-        at the bottom
+        Lookout for "custom_cookie" in the devtools
         <br />
         <br />
         <strong>Try to log in with:</strong>

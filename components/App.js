@@ -1,10 +1,7 @@
-import { ReactQueryDevtools } from 'react-query-devtools';
-
 export default function App({ children }) {
   return (
     <main>
       {children}
-      <ReactQueryDevtools initialIsOpen={true} />
       <style jsx global>{`
         * {
           font-family: Menlo, Monaco, 'Lucida Console', 'Liberation Mono',
