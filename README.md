@@ -4,7 +4,7 @@ The following guide explains how to setup FaunaDB & Next.js in order to have a s
 
 These are some of the features that this setup provides:
 
-- A somewhat secure auth flow with httpOnly cookies [[1]](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Security)
+- A somewhat secure auth flow with [httpOnly cookies](https://with-graphql-faunadb-cookie-auth.now.sh).
 - Token validation on refresh and window focus thanks to `react-query`'s [`useQuery` API](https://github.com/tannerlinsley/react-query#useQuery). In other words, if the token associated with a user identity is invalidated with [`Logout`](https://docs.fauna.com/fauna/current/api/fql/functions/logout) or in any other way, the user is also logged out in the front-end (as soon as the window is focused or refreshed).
 - A local GraphQL server which functions as a proxy that allows us to extend Fauna's GraphQL endpoint, and basically, let's us add local-only queries or mutations in order to extend the flexibility of remote queries or mutations, bringing great flexibility to the web-app. In this case, the proxy is used to create a `validCookie` query which runs before every login, signup or logout mutation to verify if the httpCookie token is valid or not, before delegating to the remote schema (the one located in Fauna's endpoint).
 
@@ -114,6 +114,22 @@ Now let's examine each role:
 - `free_user`: Here we want to define all the resources a logged in user should have access to. In this case we allow a logged in user to logout, and to validate tokens. This role also restricts `read` and `write` actions on the `User` collection by basically stating that a logged in user only can update or read his/her own data, and that the user can't modify it's role. Finally we define a membership for the role which tells Fauna that this role should be automatically applied to all `User` documents which have a specific `role`.
 - `public`: lastly we define the `public` role, where we define which are the functions that every visitor (which is not logged in) should have. Notice that we don't directly provide access to the function `create_user`, this is handled under the hood by the `signup_user` function, which is allowed to be called in this instance.
 
-## Gotchas
+### Setting Up Env Variables
+
+You only need one env variable in your deployment, and it's for the `public` role. This is because it's the easiest way to provide access to your public functions without having to generate admin or server keys.
+
+Simply go to your Fauna Dashboard and under "SECURITY" click "NEW KEY", there select role `public` and give it any name you want. The only thing left to do is to upload this key to your Production, Preview and Development environments [in Vercel](https://vercel.com/docs/v2/build-step#environment-variables) with the name `FAUNADB_PUBLIC_ACCESS_KEY`.
+
+Notice that we only use `FAUNADB_PUBLIC_ACCESS_KEY` in [schema.js](/lib/graphql/schema.js) in the `contextlink` and it will be immediately swapped after obtaining a valid token through `Login`.
+
+## Closing thoughts
+
+I know I'm not explaining a ton of stuff in this `README` but take this as a starting point and if you feel something's missing please create an issue in this repo, and I'll gladly try to solve it or help you. Any improvements through PRs are also very much welcome!
 
 ## Credits
+
+This example is possible because a ton of work has been done previously by incredible talented people:
+
+- Paul Patterson with his [great repo](https://github.com/ptpaterson/netlify-faunadb-graphql-auth) implementing the same cookie auth flow in Netlify. Thank you for you great feedback and help in Fauna's community Slack.
+- Next.js team and their incredible examples: Apollo Server ([1](https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server-and-client-auth), [2](https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server-and-client), [3](https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server)).
+- FaunaDB team for their superb support even so I ask the silliest questions possible. Also your docs have improved tremendously, and I love them! They are incredibly helpful.
