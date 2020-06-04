@@ -1,4 +1,4 @@
-# Next.js with FaunaDB and `httpOnly` Cookie Auth Flow with GraphQL
+# Next.js, FaunaDB and `httpOnly` Cookie Auth Flow with GraphQL
 
 The following guide explains how to setup FaunaDB & Next.js in order to have a simple `httpOnly` cookie auth flow, using Apollo Server and react-query/graphql-request on the client, while being deployed in Vercel (a serverless environment).
 
@@ -7,6 +7,43 @@ These are some of the features that this setup provides:
 - A somewhat secure auth flow with [httpOnly cookies](https://with-graphql-faunadb-cookie-auth.now.sh).
 - Token validation on refresh and window focus thanks to `react-query`'s [`useQuery` API](https://github.com/tannerlinsley/react-query#useQuery). In other words, if the token associated with a user identity is invalidated with [`Logout`](https://docs.fauna.com/fauna/current/api/fql/functions/logout) or in any other way, the user is also logged out in the front-end (as soon as the window is focused or refreshed).
 - A local GraphQL server which functions as a proxy that allows us to extend Fauna's GraphQL endpoint, and basically, let's us add local-only queries or mutations in order to extend the flexibility of remote queries or mutations, bringing great flexibility to the web-app. In this case, the proxy is used to create a `validCookie` query which runs before every login, signup or logout mutation to verify if the httpCookie token is valid or not, before delegating to the remote schema (the one located in Fauna's endpoint).
+
+## How to use
+
+### Using `create-next-app`
+
+Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
+
+```bash
+npx create-next-app --example DIRECTORY_NAME DIRECTORY_NAME-app
+# or
+yarn create next-app --example DIRECTORY_NAME DIRECTORY_NAME-app
+```
+
+### Download manually
+
+Download the example:
+
+```bash
+curl https://codeload.github.com/vercel/next.js/tar.gz/canary | tar -xz --strip=2 next.js-canary/examples/DIRECTORY_NAME
+cd DIRECTORY_NAME
+```
+
+Install it and run:
+
+```bash
+npm install
+npm run dev
+# or
+yarn
+yarn dev
+```
+
+Deploy it to the cloud with [Vercel](https://vercel.com/import?filter=next.js&utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+
+## Notes
+
+The following explains in detail how to setup Fauna while also linking to several resources in order to help you achieve the same result.
 
 ## Prerequisites
 
@@ -22,7 +59,7 @@ These are some of the features that this setup provides:
 
 Let's start by defining what we need from FaunaDB. In this case we need three things: A GraphQL schema, User Defined Functions (UDFs) with FQL, and User-Defined roles. So the very first step is to have a clean db in FaunaDB to work with. Go ahead and create that first.
 
-### The GraphQL schema
+## The GraphQL schema
 
 We'll be using a simple schema, take a look at it [here](/lib/graphql/faunadbSchema.gql). It defines a couple of things:
 
@@ -41,7 +78,7 @@ So, since we want to avoid that, having a local copy in SDL format will help avo
 
 Copy all the contents from the recently downloaded SDL file inside [`remoteSchema.js`](/lib/graphql/remoteSchema.js) and be careful with the parsing, since we are saving all this as a string, you might need to replace a few `` ` ``s for `"`s, and unify some comments with `#` in order to have a correct parsed string.
 
-### User Defined Functions (UDFs)
+## User Defined Functions (UDFs)
 
 Here's where the magic starts. As you saw earlier we used `@resolver` directives to tell Fauna that we plan to define some functions. We'll do just that and define some more, in total we'll create 5 UDFs, 4 which will be used by the `@resolver` directives, and 1 which will be used directly by our local-defined schema (more on that later).
 
@@ -57,7 +94,7 @@ In order to create these functions, be sure to go to the "FUNCTIONS" menu in Fau
 
 What you need to do is then copy-paste each function inside Fauna's dashboard. One important thing here is the "Role" dropdown selector (which is marked as optional). We will use these drop-downs to select the roles (which we'll create in the next step) that each function has. Ultimately, these roles simply define the resources, in other words, the privileges each function has access to.
 
-### User Defined Roles
+## User Defined Roles
 
 Here's a very important part to the whole ABAC implementation. It's a very flexible part of Fauna, which makes it really powerful, and so it can be tricky to configure if not done right from the beginning, or at least if not done with a plan in mind.
 
@@ -114,7 +151,7 @@ Now let's examine each role:
 - `free_user`: Here we want to define all the resources a logged in user should have access to. In this case we allow a logged in user to logout, and to validate tokens. This role also restricts `read` and `write` actions on the `User` collection by basically stating that a logged in user only can update or read his/her own data, and that the user can't modify it's role. Finally we define a membership for the role which tells Fauna that this role should be automatically applied to all `User` documents which have a specific `role`.
 - `public`: lastly we define the `public` role, where we define which are the functions that every visitor (which is not logged in) should have. Notice that we don't directly provide access to the function `create_user`, this is handled under the hood by the `signup_user` function, which is allowed to be called in this instance.
 
-### Setting Up Env Variables
+## Setting Up Env Variables
 
 You only need one env variable in your deployment, and it's for the `public` role. This is because it's the easiest way to provide access to your public functions without having to generate admin or server keys.
 
