@@ -9,15 +9,15 @@
   "dependencies": {
     "apollo-link-context": "^1.0.20",
     "apollo-link-http": "^1.5.17",
-    "apollo-server-micro": "^2.13.1",
+    "apollo-server-micro": "^2.14.2",
     "cookie": "^0.4.1",
-    "faunadb": "^2.14.1",
+    "faunadb": "^2.14.2",
     "graphql": "^15.0.0",
     "graphql-request": "^2.0.0",
-    "next": "latest",
+    "next": "9.4.4",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
-    "react-query": "^1.5.3"
+    "react-query": "^1.5.5"
   },
   "license": "ISC",
   "devDependencies": {
