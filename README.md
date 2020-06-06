@@ -15,9 +15,9 @@ These are some of the features that this setup provides:
 Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
 
 ```bash
-npx create-next-app --example DIRECTORY_NAME DIRECTORY_NAME-app
+npx create-next-app --example with-cookie-auth-fauna-apollo-server with-cookie-auth-fauna-apollo-server-app
 # or
-yarn create next-app --example DIRECTORY_NAME DIRECTORY_NAME-app
+yarn create next-app --example with-cookie-auth-fauna-apollo-server with-cookie-auth-fauna-apollo-server-app
 ```
 
 ### Download manually
@@ -25,8 +25,8 @@ yarn create next-app --example DIRECTORY_NAME DIRECTORY_NAME-app
 Download the example:
 
 ```bash
-curl https://codeload.github.com/vercel/next.js/tar.gz/canary | tar -xz --strip=2 next.js-canary/examples/DIRECTORY_NAME
-cd DIRECTORY_NAME
+curl https://codeload.github.com/vercel/next.js/tar.gz/canary | tar -xz --strip=2 next.js-canary/examples/with-cookie-auth-fauna-apollo-server
+cd with-cookie-auth-fauna-apollo-server
 ```
 
 Install it and run:
@@ -148,7 +148,7 @@ Now let's examine each role:
 - `fnc_role_logout_user`: All roles are important, but logout is special because it's the first role which deals with [`Tokens`](https://docs.fauna.com/fauna/current/api/fql/functions/tokens). Tokens are [an essential part](https://docs.fauna.com/fauna/current/security/index.html#tokens) of the whole ABAC process and these are automatically created and added to an index with the same name each time you call the `Login` function.
 - `fnc_role_signup_user`: Since we've already defined `create_user` and `login_user` and signing up a user is basically the same, we can reuse their privileges by simply being able to call them.
 - `fnc_role_validate_token`: This functions requires to the index that the `Tokens` functions modifies, in this case we only need to read the items to evaluate if one specific token exists there or not.
-- `free_user`: Here we want to define all the resources a logged in user should have access to. In this case we allow a logged in user to logout, and to validate tokens. This role also restricts `read` and `write` actions on the `User` collection by basically stating that a logged in user only can update or read his/her own data, and that the user can't modify it's role. Finally we define a membership for the role which tells Fauna that this role should be automatically applied to all `User` documents which have a specific `role`.
+- `free_user`: Here we want to define all the resources a logged in user should have access to. In this case we allow a logged in user to logout, and to validate tokens. This role also restricts `read` and `write` actions on the `User` collection by basically stating that a logged in user only can update or read his/her own data, and that the user can't modify it's role. Finally we define a membership for the role which tells Fauna that this role should be automatically applied to all `User` documents which have a specific `role`. Bare in mind that this role references the function `validate_token`, if this function has not been created **previously** the shell will throw an error. Remember that only the functions referenced in the GraphQL schema as `@resolver`s are automatically created, the others (in this case `validate_token`) have to be manually created.
 - `public`: lastly we define the `public` role, where we define which are the functions that every visitor (which is not logged in) should have. Notice that we don't directly provide access to the function `create_user`, this is handled under the hood by the `signup_user` function, which is allowed to be called in this instance.
 
 ## Setting Up Env Variables
@@ -161,16 +161,10 @@ Notice that we only use `FAUNADB_PUBLIC_ACCESS_KEY` in [schema.js](/lib/graphql/
 
 Finally just run `vc pull env` to create a `.env` file locally in order to run it on your machine.
 
-## Closing thoughts
-
-I know I'm not explaining a ton of stuff in this `README` but take this as a starting point and if you feel something's missing please create an issue in this repo, and I'll gladly try to solve it or help you. Any improvements through PRs are also very much welcome!
-
 ## Credits
 
-This example is possible because a ton of work has been done previously by incredible talented people:
+This example is possible because prior art has made this incredibly simple, work which was done by incredible talented people:
 
-- Paul Patterson with his [great repo](https://github.com/ptpaterson/netlify-faunadb-graphql-auth) implementing the same cookie auth flow in Netlify. Thank you for the great feedback and help in Fauna's community Slack. Check out his [`overrideSchema.js`](https://github.com/ptpaterson/netlify-faunadb-graphql-auth/blob/master/functions/graphql/overrideSchema.js) file for an added step in schema transformation (`transformedRemoteSchema`), which filters out unneeded root fields for the client.
-- Next.js team and their incredible examples: Apollo Server ([1](https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server-and-client-auth), [2](https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server-and-client), [3](https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server)).
-- FaunaDB team for their superb support even so I ask the silliest questions possible. Also your docs have improved tremendously, and I love them! They are incredibly helpful.
-
-Thank you all
+- Paul Patterson with his [great repo](https://github.com/ptpaterson/netlify-faunadb-graphql-auth) implementing the same cookie auth flow in Netlify. Thank you for the great feedback and help in Fauna's community Slack. Check out his [`overrideSchema.js`](https://github.com/ptpaterson/netlify-faunadb-graphql-auth/blob/master/functions/graphql/overrideSchema.js) file for an added step in schema transformation (`transformedRemoteSchema`), which filters out unneeded root fields for the client. You'll need that in a production environment.
+- Next.js team and their incredible examples for Apollo Server ([1](https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server-and-client-auth), [2](https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server-and-client), [3](https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server)).
+- FaunaDB team for their superb support and [docs](https://docs.fauna.com/fauna/current/index.html).
