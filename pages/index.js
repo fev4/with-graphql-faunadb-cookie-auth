@@ -1,61 +1,61 @@
-import { useState } from 'react'
-import { useMutation, useQuery } from 'react-query'
-import { request } from 'graphql-request'
+import { useState } from 'react';
+import { useMutation, useQuery } from 'react-query';
+import { request } from 'graphql-request';
 
-import App from '../components/App'
-import InfoBox from '../components/InfoBox'
-import SignUp from '../components/SignUp'
-import LogIn from '../components/LogIn'
+import App from '../components/App';
+import InfoBox from '../components/InfoBox';
+import SignUp from '../components/SignUp';
+import LogIn from '../components/LogIn';
 
 const LOGOUT_USER = `
     mutation logoutUser {
       logoutUser
     }
-  `
+  `;
 
 const VALIDATE_COOKIE = `
     query validateCookie {
       validCookie
     }
-  `
+  `;
 
 const IndexPage = () => {
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false)
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
   const [logoutUser, { status: logoutStatus }] = useMutation(
     () => {
-      return request('/api/graphql', LOGOUT_USER)
+      return request('/api/graphql', LOGOUT_USER);
     },
     {
       onSuccess: (data) => {
-        console.log('Logout success')
-        setIsUserLoggedIn(false)
+        console.log('Logout success');
+        setIsUserLoggedIn(false);
       },
     }
-  )
+  );
 
   // Should only validate when user is logged in and every 5 minutes
   const { status: validateStatus, isFetching: isValidateFetching } = useQuery(
     ['validCookie'],
     async (key, name) => {
-      const res = await request('/api/graphql', VALIDATE_COOKIE)
-      return res
+      const res = await request('/api/graphql', VALIDATE_COOKIE);
+      return res;
     },
     {
       onSuccess: (data) => {
         if (data.validCookie) {
-          console.log('Validation success')
-          setIsUserLoggedIn(true)
+          console.log('Validation success');
+          setIsUserLoggedIn(true);
         } else {
-          console.log('Custom cookie not valid')
-          setIsUserLoggedIn(false)
+          console.log('Custom cookie not valid');
+          setIsUserLoggedIn(false);
         }
       },
       onError: (err) => {
-        console.log(err)
+        console.log(err);
       },
     }
-  )
+  );
 
   return (
     <App>
@@ -64,14 +64,16 @@ const IndexPage = () => {
         while also validating said cookie on focus and on every initial render.
       </InfoBox>
       <InfoBox>
-        Lookout for "custom_cookie" in the devtools
-        <br />
-        <br />
+        Try duplicating the tab, logging out new one, and then navigating back
+        to the original.
+      </InfoBox>
+      <InfoBox>Lookout for "custom_cookie" in the devtools</InfoBox>
+      <InfoBox>
         <strong>Try to log in with:</strong>
         <br />
-        username:: 123@example.com
+        email: 123@example.com
         <br />
-        password:: 123
+        password: 123
       </InfoBox>
       <InfoBox>
         Is cookie being validated?{' '}
@@ -103,7 +105,7 @@ const IndexPage = () => {
         </>
       )}
     </App>
-  )
-}
+  );
+};
 
-export default IndexPage
+export default IndexPage;

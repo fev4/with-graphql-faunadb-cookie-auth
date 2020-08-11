@@ -1,35 +1,35 @@
-import { useMutation } from 'react-query'
-import { request } from 'graphql-request'
+import { useMutation } from 'react-query';
+import { request } from 'graphql-request';
 
 const SIGNUP_USER = `
   mutation signupUser($data: CreateUserInput!) {
     signupUser(data: $data)
   }
-`
+`;
 
 export default function SignUp({ setIsUserLoggedIn }) {
   const [signupUser, { status: signupStatus }] = useMutation(
     (variables) => {
-      return request('/api/graphql', SIGNUP_USER, variables)
+      return request('/api/graphql', SIGNUP_USER, variables);
     },
     {
       onSuccess: (data) => {
-        console.log('Signup success')
-        setIsUserLoggedIn(true)
+        console.log('Signup success');
+        setIsUserLoggedIn(true);
       },
       onError: (err) => {
-        console.log(err.message)
+        console.log(err.message);
       },
     }
-  )
+  );
 
   const handleSubmit = async (event) => {
-    event.preventDefault()
-    const form = event.target
-    const formData = new window.FormData(form)
-    const email = formData.get('email')
-    const password = formData.get('password')
-    form.reset()
+    event.preventDefault();
+    const form = event.target;
+    const formData = new window.FormData(form);
+    const email = formData.get('email');
+    const password = formData.get('password');
+    form.reset();
 
     await signupUser({
       data: {
@@ -37,13 +37,13 @@ export default function SignUp({ setIsUserLoggedIn }) {
         password,
         role: 'FREE_USER',
       },
-    })
-  }
+    });
+  };
 
   return (
     <form onSubmit={handleSubmit}>
       <h2>SignUp</h2>
-      <input placeholder="username" name="email" type="email" required />
+      <input placeholder="fake email" name="email" type="email" required />
       <input placeholder="password" name="password" type="password" required />
       <button type="submit" disabled={signupStatus === 'loading'}>
         Submit
@@ -63,5 +63,5 @@ export default function SignUp({ setIsUserLoggedIn }) {
         }
       `}</style>
     </form>
-  )
+  );
 }
