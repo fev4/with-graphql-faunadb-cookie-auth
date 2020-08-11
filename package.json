@@ -6,7 +6,6 @@
     "build": "next build",
     "start": "next start"
   },
-  "author": "Felipe <afvasquezt@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "apollo-link-context": "^1.0.20",
@@ -22,6 +21,7 @@
     "react-query": "^2.5.13"
   },
   "devDependencies": {
-    "babel-plugin-graphql-tag": "^3.0.0"
+    "babel-plugin-graphql-tag": "^3.0.0",
+    "dotenv": "^8.2.0"
   }
 }
