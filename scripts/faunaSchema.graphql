@@ -1,5 +1,4 @@
 enum UserRole {
-  ADMIN
   FREE_USER
 }
 
