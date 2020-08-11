@@ -10,5 +10,5 @@ export default function InfoBox({ children }) {
       `}</style>
       {children}
     </div>
-  )
+  );
 }

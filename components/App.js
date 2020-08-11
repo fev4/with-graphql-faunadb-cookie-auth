@@ -43,5 +43,5 @@ export default function App({ children }) {
         }
       `}</style>
     </main>
-  )
+  );
 }
