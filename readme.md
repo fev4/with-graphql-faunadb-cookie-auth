@@ -1,12 +1,19 @@
 # Next.js, FaunaDB and `httpOnly` Cookie Auth Flow with GraphQL
 
-The following guide explains how to setup FaunaDB & Next.js in order to have a simple `httpOnly` cookie auth flow, using Apollo Server and react-query/graphql-request on the client, while being deployed in Vercel (a serverless environment).
+The present example explains how to setup an `httpOnly` cookie auth flow with Next.js and Fauna, using Apollo Server and react-query/graphql-request on the client.
 
 These are some of the features that this setup provides:
 
-- An [httpOnly cookie based](https://with-graphql-faunadb-cookie-auth.now.sh) auth flow.
-- Token validation on refresh and window focus with [`react-query`](https://github.com/tannerlinsley/react-query#useQuery).
-- A local GraphQL server as a proxy, allowing us to extend Fauna's GraphQL endpoint.
+1. The auth flow lives inside the Fauna dashboard with the help of [User Defined Functions (UDFs)](https://docs.fauna.com/fauna/current/api/graphql/functions) and [User Defined Roles (UDRs)](https://docs.fauna.com/fauna/current/security/roles.html). UDFs and UDRs are a flexible medium offered in Fauna by which you can implement business logic and [Attribute-based Access Control (ABAC)](https://docs.fauna.com/fauna/current/security/abac.html) to any document, function and index in the database.
+2. A GraphQL server using [schema stitching](https://www.apollographql.com/docs/apollo-server/features/schema-stitching/).
+   1. This is helpful because it provides the maximum possible flexibility in terms of API integration through GraphQL, given that Fauna doesn't support [Apollo Federation](https://www.apollographql.com/docs/apollo-server/federation/introduction/) yet.
+   2. In other words, by using schema stitching we can extend our GraphQL endpoint to connect with other APIs or basically run any arbitrary code in-between Fauna requests (similar to a proxy).
+   3. This is specially useful if you don't want to have several API endpoints and want to manage everything through GraphQL.
+3. The example also provides a [series of scripts](/examples/with-cookie-auth-fauna-apollo-server/scripts) that can be executed with a single command, that help you manage your database quickly on a day to day basis, from pushing a newly created schema, generating new keys, updating your functions or even creating a whole new database from scratch. This is incredibly useful when getting started in order to fasten things up.
+4. An [httpOnly cookie based](https://with-graphql-faunadb-cookie-auth.now.sh) auth flow.
+5. Token validation on refresh and window focus with [`react-query`](https://github.com/tannerlinsley/react-query#useQuery). This is useful because it keeps the auth state changes in sync with the client, for example if the user token dissapears on the DB (for any reason), it logs out the user in any other client automatically.
+
+This is an advanced example that assumes a lot of concepts, and it strives to provide the most ample bed from which you can get started with both FaunaDB and Next.js. If you are looking for a simpler approach which doesn't include GraphQL, UDFs or User Defined Roles, and only handles a cookie based authentication plus token validation, be sure to check out the example [with-cookie-auth-fauna](https://github.com/vercel/next.js/tree/canary/examples/with-cookie-auth-fauna).
 
 ## Demo
 
