@@ -3,6 +3,9 @@ const chalk = require('chalk');
 
 const { faunaClient, createThen, createCatch } = require('./config');
 
+// This file contains the config for all the roles
+// Notice we are also creating here a function (crFnc1) that uses a previously created role (crRol5)
+
 const crRol0 = () => {
   return console.log(chalk.yellow('\n⚡️ ') + chalk.cyan('Creating roles\n'));
 };
