@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: '.env.local' });
 const { Client } = require('faunadb');
 const chalk = require('chalk');
 
@@ -32,22 +32,30 @@ const createThen = (typeName) => (r) => {
 };
 
 const createCatch = (typeName) => (e) => {
-  if (e.message === 'instance already exists') {
-    console.log(
-      chalk.yellow('⏭ ') + ` ${typeName} already exists.  Skipping...`
-    );
-  } else if (e.message === 'unauthorized') {
-    e.message =
-      'unauthorized: missing or invalid fauna_server_secret, or not enough permissions';
-    throw e;
-  } else if (
-    e.description === 'Insufficient privileges to perform the action.'
-  ) {
-    e.description =
-      'Insufficient privileges to perform the action. Check you are using an admin key instead of a server one';
-    throw e;
-  } else {
-    throw e;
+  try {
+    // console.log(e);
+    if (e.message === 'instance already exists') {
+      console.log(
+        chalk.yellow('⏭ ') + ` ${typeName} already exists.  Skipping...`
+      );
+    } else if (e.description === 'Unauthorized') {
+      e.description =
+        'Unauthorized: missing or invalid FAUNADB_ADMIN_SECRET, or not enough permissions';
+      throw e;
+    } else if (
+      e.description === 'Insufficient privileges to perform the action.'
+    ) {
+      e.description =
+        'Insufficient privileges to perform the action. Check you are using an admin key instead of a server one';
+      throw e;
+    } else if (e.description === 'document is not unique.') {
+      e.description = `${typeName} already exists`;
+      throw e;
+    } else {
+      throw e;
+    }
+  } catch (e) {
+    console.log(chalk.green('⛔️ ') + (e.description || e.message));
   }
 };
 
