@@ -2,8 +2,15 @@ const { uploadSchema } = require('./uploadSchema');
 const { fnList } = require('./updateFunctions');
 const { roleFnList } = require('./createRoles');
 const { manageKeys } = require('./manageKeys');
+const { createUser } = require('./createDoc');
 
-const fullFnList = [uploadSchema, ...roleFnList, ...fnList, manageKeys];
+const fullFnList = [
+  uploadSchema,
+  ...roleFnList,
+  ...fnList,
+  createUser,
+  manageKeys,
+];
 
 // Inspired by the script on ptpaterson's example
 // https://github.com/ptpaterson/netlify-faunadb-graphql-auth/tree/master/scripts
@@ -29,6 +36,8 @@ module.exports.createRoles = async function createRoles() {
 module.exports.manageKeys = manageKeys;
 
 module.exports.uploadSchema = uploadSchema;
+
+module.exports.createUser = createUser;
 
 // Run:
 // node - e 'require("./scripts/setup.js").full()'

@@ -4,7 +4,7 @@ The present example explains how to setup an `httpOnly` cookie auth flow with Ne
 
 These are some of the features that this setup provides:
 
-1. The auth flow lives inside the Fauna dashboard with the help of [User Defined Functions (UDFs)](https://docs.fauna.com/fauna/current/api/graphql/functions) and [User Defined Roles (UDRs)](https://docs.fauna.com/fauna/current/security/roles.html). UDFs and UDRs are a flexible medium offered in Fauna by which you can implement business logic and [Attribute-based Access Control (ABAC)](https://docs.fauna.com/fauna/current/security/abac.html) to any document, function and index in the database.
+1. The auth flow lives inside the Fauna dashboard with the help of [User Defined Functions (UDFs)](https://docs.fauna.com/fauna/current/api/graphql/functions) and [User Defined Roles (UDRs)](https://docs.fauna.com/fauna/current/security/roles.html). UDFs and UDRs are one flexible medium offered in Fauna by which you can implement business logic and [Attribute-based Access Control (ABAC)](https://docs.fauna.com/fauna/current/security/abac.html) to any document, function and index in the database.
 2. A GraphQL server using [schema stitching](https://www.apollographql.com/docs/apollo-server/features/schema-stitching/).
    1. This is helpful because it provides the maximum possible flexibility in terms of API integration through GraphQL, given that Fauna doesn't support [Apollo Federation](https://www.apollographql.com/docs/apollo-server/federation/introduction/) yet.
    2. In other words, by using schema stitching we can extend our GraphQL endpoint to connect with other APIs or basically run any arbitrary code in-between Fauna requests (similar to a proxy).
