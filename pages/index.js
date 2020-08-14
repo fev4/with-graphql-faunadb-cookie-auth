@@ -64,8 +64,8 @@ const IndexPage = () => {
         while also validating said cookie on focus and on every initial render.
       </InfoBox>
       <InfoBox>
-        Try duplicating the tab, logging out new one, and then navigating back
-        to the original.
+        Try duplicating the tab, logging out in the new one, and then navigating
+        back to the original. It should automatically logout, syncing both tabs.
       </InfoBox>
       <InfoBox>Lookout for "custom_cookie" in the devtools</InfoBox>
       <InfoBox>
