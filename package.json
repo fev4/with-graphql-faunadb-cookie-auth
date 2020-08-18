@@ -17,7 +17,7 @@
     "next": "latest",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-query": "^2.5.13"
+    "react-query": "^2.5.14"
   },
   "devDependencies": {
     "babel-plugin-graphql-tag": "^3.0.0",
