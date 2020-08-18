@@ -1,5 +1,5 @@
 import { ApolloServer } from 'apollo-server-micro';
-import cookies from '../../lib/cookieHelper';
+import cookieSetter from '../../lib/cookieHelper';
 import schema from '../../lib/graphql/schema';
 
 const apolloServer = new ApolloServer({
@@ -19,4 +19,4 @@ export const config = {
 
 const handler = apolloServer.createHandler({ path: '/api/graphql' });
 
-export default cookies(handler);
+export default cookieSetter(handler);
