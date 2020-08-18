@@ -2,6 +2,8 @@ import React from 'react';
 import { useMutation } from 'react-query';
 import { request } from 'graphql-request';
 
+import { user } from './UserContext';
+
 const SIGNUP_USER = `
   mutation signupUser($data: CreateUserInput!) {
     signupUser(data: $data) {
@@ -12,14 +14,15 @@ const SIGNUP_USER = `
 `;
 
 export default function SignUp({ setIsUserLoggedIn }) {
+  const { setId } = user();
   const [signupUser, { status: signupStatus }] = useMutation(
     (variables) => {
       return request('/api/graphql', SIGNUP_USER, variables);
     },
     {
       onSuccess: (data) => {
-        console.log('Signup success');
-        setIsUserLoggedIn(true);
+        setId(data.signupUser.userId);
+        localStorage.setItem('userId', data.signupUser.userId);
       },
       onError: (err) => {
         console.log(err.message);

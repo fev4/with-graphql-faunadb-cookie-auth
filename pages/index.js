@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { request } from 'graphql-request';
 
@@ -7,6 +7,7 @@ import InfoBox from '../components/InfoBox';
 import SignUp from '../components/SignUp';
 import LogIn from '../components/LogIn';
 import ThingList from '../components/ThingsList';
+import { user } from '../components/UserContext';
 
 const LOGOUT_USER = `
     mutation logoutUser {
@@ -21,35 +22,40 @@ const VALIDATE_COOKIE = `
   `;
 
 const IndexPage = () => {
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const { id, setId } = user();
 
   const [logoutUser, { status: logoutStatus }] = useMutation(
     () => {
       return request('/api/graphql', LOGOUT_USER);
     },
     {
-      onSuccess: (data) => {
+      onSuccess: () => {
         console.log('Logout success');
-        setIsUserLoggedIn(false);
+        setId('');
       },
     }
   );
 
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    userId ? setId(userId) : setId('');
+  }, []);
+
   // Should only validate when user is logged in and every 5 minutes
   const { status: validateStatus, isFetching: isValidateFetching } = useQuery(
     ['validCookie'],
-    async (key, name) => {
+    async () => {
       const res = await request('/api/graphql', VALIDATE_COOKIE);
       return res;
     },
     {
       onSuccess: (data) => {
-        if (data.validCookie) {
+        if (data.validCookie === true) {
+          /* No need to do anything else, the `userId` is handled in the `useEffect` */
           console.log('Validation success');
-          setIsUserLoggedIn(true);
         } else {
           console.log('Custom cookie not valid');
-          setIsUserLoggedIn(false);
+          logoutUser();
         }
       },
       onError: (err) => {
@@ -68,7 +74,7 @@ const IndexPage = () => {
         Try duplicating the tab, logging out in the new one, and then navigating
         back to the original. It should automatically logout, syncing both tabs.
       </InfoBox>
-      <InfoBox>Lookout for "custom_cookie" in the devtools</InfoBox>
+      <InfoBox>Lookout for &quot;custom_cookie&quot; in the devtools</InfoBox>
       <InfoBox>
         <strong>Try to log in with:</strong>
         <br />
@@ -85,9 +91,9 @@ const IndexPage = () => {
         </strong>
       </InfoBox>
       <InfoBox>
-        Is user logged in? <strong>{isUserLoggedIn ? 'TRUE' : 'FALSE'}</strong>
+        Is user logged in? <strong>{id ? 'TRUE' : 'FALSE'}</strong>
       </InfoBox>
-      {!isUserLoggedIn ? null : (
+      {!id ? null : (
         <div>
           <h2>LogOut</h2>
           <button
@@ -100,10 +106,10 @@ const IndexPage = () => {
           <ThingList />
         </div>
       )}
-      {isUserLoggedIn ? null : (
+      {id ? null : (
         <>
-          <LogIn setIsUserLoggedIn={setIsUserLoggedIn} />
-          <SignUp setIsUserLoggedIn={setIsUserLoggedIn} />
+          <LogIn />
+          <SignUp />
         </>
       )}
     </App>
