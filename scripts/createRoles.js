@@ -50,6 +50,12 @@ const crRol2 = async () => {
               unrestricted_read: true,
             },
           },
+          {
+            resource: q.Collection('User'),
+            actions: {
+              read: true,
+            },
+          },
         ],
       })
     )

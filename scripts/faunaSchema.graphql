@@ -18,9 +18,14 @@ input LoginUserInput {
   password: String!
 }
 
+type LoginRes @embedded {
+  userToken: String
+  userId: String!
+}
+
 type Mutation {
-  signupUser(data: CreateUserInput!): String! @resolver(name: "signup_user")
+  signupUser(data: CreateUserInput!): LoginRes! @resolver(name: "signup_user")
   createUser(data: CreateUserInput!): User! @resolver(name: "create_user")
-  loginUser(data: LoginUserInput!): String! @resolver(name: "login_user")
+  loginUser(data: LoginUserInput!): LoginRes! @resolver(name: "login_user")
   logoutUser: Boolean! @resolver(name: "logout_user")
 }

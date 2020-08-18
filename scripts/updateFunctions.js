@@ -38,22 +38,35 @@ const upFn2 = async () => {
       q.Update(q.Function('login_user'), {
         role: q.Role('fnc_role_login_user'),
         body: q.Query(
-          q.Lambda(
-            ['input'],
-            q.Select(
-              'secret',
+          q.Lambda(['input'], {
+            userToken: q.Select(
+              ['secret'],
               q.Login(
-                q.Match(
-                  q.Index('unique_User_email'),
-                  q.Select('email', q.Var('input'))
+                q.Select(
+                  ['ref'],
+                  q.Get(
+                    q.Match(
+                      q.Index('unique_User_email'),
+                      q.Select('email', q.Var('input'))
+                    )
+                  )
                 ),
                 {
                   password: q.Select('password', q.Var('input')),
                   ttl: q.TimeAdd(q.Now(), 14, 'days'),
                 }
               )
-            )
-          )
+            ),
+            userId: q.Select(
+              ['ref', 'id'],
+              q.Get(
+                q.Match(
+                  q.Index('unique_User_email'),
+                  q.Select('email', q.Var('input'))
+                )
+              )
+            ),
+          })
         ),
       })
     )

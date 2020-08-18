@@ -4,7 +4,10 @@ import { request } from 'graphql-request';
 
 const SIGNUP_USER = `
   mutation signupUser($data: CreateUserInput!) {
-    signupUser(data: $data)
+    signupUser(data: $data) {
+      userId
+      userToken
+    }
   }
 `;
 
