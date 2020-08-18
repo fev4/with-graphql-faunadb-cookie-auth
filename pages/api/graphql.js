@@ -11,6 +11,10 @@ import schema from '../../lib/graphql/schema';
 const q = faunadb.query;
 
 const tokenValidation = async ({ req, res }) => {
+  /* Since we need to constantly validate the user token
+  then it makes sense to do it before every resolver, and
+  save either an empty string or a valid token in the context.
+  `tokenValidation` only unsets the cookie in case it's not valid. */
   console.log(chalk.gray('\n⚙️  ') + chalk.cyan('context -- tokenValidation'));
   const { setCookie } = res;
   let isTokenValid, token;
@@ -53,6 +57,8 @@ const tokenValidation = async ({ req, res }) => {
 
 const apolloServer = new ApolloServer({
   schema,
+  /* The context is recalculated every time a resolver is ran,
+  it runs even before `setContext` */
   context: async (ctx) => ({
     token: await tokenValidation(ctx),
     ...ctx,

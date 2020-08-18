@@ -2,6 +2,12 @@ enum UserRole {
   FREE_USER
 }
 
+# If creating one-to-one relationships, take this into account
+# https://forums.fauna.com/t/in-a-one-to-one-relation-between-two-collections-provide-a-mechanism-to-control-in-what-collection-the-reference-will-be-stored/36
+# In this example we'll be using a one-to-many relationship
+# https://docs.fauna.com/fauna/current/api/graphql/relations#one2many
+# A user can own many things, and a thing can be owned by one user (for the example's sake)
+
 type User {
   things: [Thing] @relation
   email: String! @unique

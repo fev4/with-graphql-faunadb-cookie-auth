@@ -40,10 +40,10 @@ module.exports.uploadSchema = uploadSchema;
 module.exports.createUser = createUser;
 
 // Run:
-// node - e 'require("./scripts/setup.js").full()'
+// node -e 'require("./scripts/setup.js").full()'
 // to run the full setup script
 // Alternatevely you can run each function by it self
 // Similar to:
-// node - e 'require("./scripts/setup.js").updateFunctions()'
+// node -e 'require("./scripts/setup.js").updateFunctions()'
 // or
-// node - e 'require("./scripts/setup.js").uploadSchema()'
+// node -e 'require("./scripts/setup.js").uploadSchema()'
