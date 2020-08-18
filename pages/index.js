@@ -6,6 +6,7 @@ import App from '../components/App';
 import InfoBox from '../components/InfoBox';
 import SignUp from '../components/SignUp';
 import LogIn from '../components/LogIn';
+import ThingList from '../components/ThingsList';
 
 const LOGOUT_USER = `
     mutation logoutUser {
@@ -96,6 +97,7 @@ const IndexPage = () => {
           >
             Submit
           </button>
+          <ThingList />
         </div>
       )}
       {isUserLoggedIn ? null : (

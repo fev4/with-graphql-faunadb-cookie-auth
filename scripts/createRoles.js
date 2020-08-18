@@ -171,6 +171,55 @@ const crRol6 = async () => {
             },
           },
           {
+            // This is restricting the actions the User can do with Thing
+            // Basically, making sure each user can only see, create, modify or delete his or her stuff
+            resource: q.Collection('Thing'),
+            actions: {
+              read: q.Query(
+                q.Lambda(
+                  'ref',
+                  q.Equals(
+                    q.Identity(),
+                    q.Select(['data', 'owner'], q.Get(q.Var('ref')))
+                  )
+                )
+              ),
+              write: q.Query(
+                q.Lambda(
+                  ['oldData', 'newData'],
+                  q.And(
+                    q.Equals(
+                      q.Identity(),
+                      q.Select(['data', 'owner'], q.Var('oldData'))
+                    ),
+                    q.Equals(
+                      q.Select(['data', 'owner'], q.Var('oldData')),
+                      q.Select(['data', 'owner'], q.Var('newData'))
+                    )
+                  )
+                )
+              ),
+              create: q.Query(
+                q.Lambda(
+                  'values',
+                  q.Equals(
+                    q.Identity(),
+                    q.Select(['data', 'owner'], q.Var('values'))
+                  )
+                )
+              ),
+              delete: q.Query(
+                q.Lambda(
+                  'ref',
+                  q.Equals(
+                    q.Identity(),
+                    q.Select(['data', 'owner'], q.Get(q.Var('ref')))
+                  )
+                )
+              ),
+            },
+          },
+          {
             resource: q.Function('validate_token'),
             actions: {
               call: true,

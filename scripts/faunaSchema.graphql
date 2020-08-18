@@ -3,8 +3,14 @@ enum UserRole {
 }
 
 type User {
+  things: [Thing] @relation
   email: String! @unique
   role: UserRole!
+}
+
+type Thing {
+  owner: User!
+  name: String
 }
 
 input CreateUserInput {
