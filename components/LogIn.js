@@ -36,7 +36,6 @@ export default function LogIn() {
     const formData = new window.FormData(form);
     const email = formData.get('email');
     const password = formData.get('password');
-    form.reset();
 
     await loginUser({
       data: {
@@ -44,6 +43,8 @@ export default function LogIn() {
         password,
       },
     });
+
+    form.reset();
   };
 
   return (
