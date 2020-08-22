@@ -11,13 +11,14 @@
     "apollo-link-http": "^1.5.17",
     "apollo-server-micro": "^2.16.1",
     "cookie": "^0.4.1",
-    "faunadb": "^2.14.2",
+    "faunadb": "^3.0.1",
     "graphql": "^15.3.0",
     "graphql-request": "^3.0.0",
     "next": "latest",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-query": "^2.5.14"
+    "react-query": "^2.9.0",
+    "react-query-devtools": "^2.4.4"
   },
   "devDependencies": {
     "babel-plugin-graphql-tag": "^3.0.0",

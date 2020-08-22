@@ -31,6 +31,7 @@ const IndexPage = () => {
     {
       onSuccess: () => {
         console.log('Logout success');
+        localStorage.removeItem('userId');
         setId('');
       },
     }

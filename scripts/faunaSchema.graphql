@@ -35,6 +35,10 @@ type LoginRes @embedded {
   userId: String!
 }
 
+type Query {
+  findAllThings: [Thing]
+}
+
 type Mutation {
   signupUser(data: CreateUserInput!): LoginRes! @resolver(name: "signup_user")
   createUser(data: CreateUserInput!): User! @resolver(name: "create_user")
