@@ -231,6 +231,13 @@ const crRol6 = async () => {
               call: true,
             },
           },
+          {
+            resource: q.Index('findAllThings'),
+            actions: {
+              unrestricted_read: false,
+              read: true,
+            },
+          },
         ],
         membership: [
           {
