@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery, queryCache } from 'react-query';
 import { request } from 'graphql-request';
 
 import App from '../components/App';
@@ -25,14 +25,13 @@ const IndexPage = () => {
   const { id, setId } = user();
 
   const [logoutUser, { status: logoutStatus }] = useMutation(
-    () => {
-      return request('/api/graphql', LOGOUT_USER);
-    },
+    () => request('/api/graphql', LOGOUT_USER),
     {
       onSuccess: () => {
-        console.log('Logout success');
+        queryCache.clear();
         localStorage.removeItem('userId');
         setId('');
+        console.log('Logout success');
       },
     }
   );
@@ -42,13 +41,10 @@ const IndexPage = () => {
     userId ? setId(userId) : setId('');
   }, []);
 
-  // Should only validate when user is logged in and every 5 minutes
+  // Should only validate when user is logged in
   const { status: validateStatus, isFetching: isValidateFetching } = useQuery(
-    ['validCookie'],
-    async () => {
-      const res = await request('/api/graphql', VALIDATE_COOKIE);
-      return res;
-    },
+    [id, 'validCookie'],
+    async () => request('/api/graphql', VALIDATE_COOKIE),
     {
       onSuccess: (data) => {
         if (data.validCookie === true) {
@@ -96,9 +92,10 @@ const IndexPage = () => {
       </InfoBox>
       {!id ? null : (
         <div>
-          <h2>LogOut</h2>
+          <h2 className="inline h2">LogOut</h2>
           <button
             type="button"
+            className="inline"
             disabled={logoutStatus === 'loading'}
             onClick={logoutUser}
           >
@@ -113,6 +110,17 @@ const IndexPage = () => {
           <SignUp />
         </>
       )}
+      <style jsx>
+        {`
+          .inline {
+            display: inline-block;
+          }
+          .h2 {
+            margin-right: 5px;
+            margin-bottom: 20px;
+          }
+        `}
+      </style>
     </App>
   );
 };
