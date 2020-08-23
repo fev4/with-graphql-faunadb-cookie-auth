@@ -43,7 +43,7 @@ const IndexPage = () => {
 
   // Should only validate when user is logged in and every 3 seconds
   const { status: validateStatus, isFetching: isValidateFetching } = useQuery(
-    [id, 'validCookie'],
+    ['validCookie'],
     async () => request('/api/graphql', VALIDATE_COOKIE),
     {
       onSuccess: (data) => {
@@ -58,6 +58,9 @@ const IndexPage = () => {
       onError: (err) => {
         console.log(err);
       },
+      enabled: id,
+      refetchOnMount: false,
+      refetchOnWindowFocus: true,
     }
   );
 
