@@ -15,7 +15,7 @@ const tokenValidation = async ({ req, res }) => {
   then it makes sense to do it before every resolver, and
   save either an empty string or a valid token in the context.
   `tokenValidation` only unsets the cookie in case it's not valid. */
-  console.log(chalk.gray('\n⚙️  ') + chalk.cyan('context -- tokenValidation'));
+  console.log(chalk.gray('⚙️  ') + chalk.cyan('context -- tokenValidation'));
   const { setCookie } = res;
   let isTokenValid, token;
   if (req.headers.cookie) {
@@ -57,8 +57,9 @@ const tokenValidation = async ({ req, res }) => {
 
 const apolloServer = new ApolloServer({
   schema,
-  /* The context is recalculated every time a resolver is ran,
-  it runs even before `setContext` */
+  /* The context is recalculated every time a resolver runs,
+  it runs even before `setContext`. We can also pass it down 
+  to all resolvers and resolve it there */
   context: async (ctx) => ({
     token: await tokenValidation(ctx),
     ...ctx,
