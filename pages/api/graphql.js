@@ -10,7 +10,7 @@ import schema from '../../lib/graphql/schema';
 
 const q = faunadb.query;
 
-const tokenValidation = async ({ req, res }) => {
+const tokenValidation = async (req, res) => {
   /* Since we need to constantly validate the user token
   then it makes sense to do it before every resolver, and
   save either an empty string or a valid token in the context.
@@ -61,7 +61,7 @@ const apolloServer = new ApolloServer({
   it runs even before `setContext`. We can also pass it down 
   to all resolvers and resolve it there */
   context: async (ctx) => ({
-    token: await tokenValidation(ctx),
+    token: tokenValidation,
     ...ctx,
   }),
   introspection: !(process.env.NODE_ENV === 'production'),
