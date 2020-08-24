@@ -48,7 +48,8 @@ const IndexPage = () => {
     },
     {
       onSuccess: (data) => {
-        if (data.validCookie === true) {
+        // noinspection JSIgnoredPromiseFromCall
+          if (data.validCookie === true) {
           /* No need to do anything else, the `userId` is handled in the `useEffect` */
           console.log('Validation success');
         } else {
