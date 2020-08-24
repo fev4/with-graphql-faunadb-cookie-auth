@@ -40,10 +40,12 @@ const IndexPage = () => {
   const {
     status: validateStatus,
     isFetching: isValidateFetching,
-    data: validCookieData,
   } = useQuery(
     ['validCookie'],
-    async () => request('/api/graphql', VALIDATE_COOKIE),
+    async () => {
+      // debugger;
+      return request('/api/graphql', VALIDATE_COOKIE);
+    },
     {
       onSuccess: (data) => {
         if (data.validCookie === true) {
