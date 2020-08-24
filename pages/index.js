@@ -36,13 +36,12 @@ const IndexPage = () => {
     }
   );
 
-  useEffect(() => {
-    const userId = localStorage.getItem('userId');
-    userId ? setId(userId) : setId('');
-  }, []);
-
   // Should only validate when user is logged in and every 3 seconds
-  const { status: validateStatus, isFetching: isValidateFetching } = useQuery(
+  const {
+    status: validateStatus,
+    isFetching: isValidateFetching,
+    data: validCookieData,
+  } = useQuery(
     ['validCookie'],
     async () => request('/api/graphql', VALIDATE_COOKIE),
     {
@@ -58,11 +57,16 @@ const IndexPage = () => {
       onError: (err) => {
         console.log(err);
       },
-      enabled: id,
       refetchOnMount: false,
       refetchOnWindowFocus: true,
     }
   );
+
+  /* Only runs once to pull the id from `localStorage` */
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    userId ? setId(userId) : setId('');
+  }, []);
 
   return (
     <App>
