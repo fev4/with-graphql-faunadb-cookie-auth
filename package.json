@@ -9,22 +9,22 @@
   "dependencies": {
     "apollo-link-context": "^1.0.20",
     "apollo-link-http": "^1.5.17",
-    "apollo-server-micro": "^2.16.1",
+    "apollo-server-micro": "^2.18.2",
     "cookie": "^0.4.1",
     "faunadb": "^3.0.1",
     "graphql": "^15.3.0",
-    "graphql-request": "^3.0.0",
-    "next": "latest",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-query": "^2.9.0",
-    "react-query-devtools": "^2.4.4"
+    "graphql-request": "^3.1.0",
+    "next": "9.5.5",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "react-query": "^2.23.1",
+    "react-query-devtools": "^2.6.0"
   },
   "devDependencies": {
-    "babel-plugin-graphql-tag": "^3.0.0",
+    "babel-plugin-graphql-tag": "^3.1.0",
     "dotenv": "^8.2.0",
-    "eslint": "^7.7.0",
-    "eslint-plugin-react": "^7.20.6",
+    "eslint": "^7.11.0",
+    "eslint-plugin-react": "^7.21.4",
     "request": "^2.88.2"
   }
 }
