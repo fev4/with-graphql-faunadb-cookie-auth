@@ -37,10 +37,7 @@ const IndexPage = () => {
   );
 
   // Should only validate when user is logged in and every 3 seconds
-  const {
-    status: validateStatus,
-    isFetching: isValidateFetching,
-  } = useQuery(
+  const { status: validateStatus, isFetching: isValidateFetching } = useQuery(
     ['validCookie'],
     async () => {
       // debugger;
